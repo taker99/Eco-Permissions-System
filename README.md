@@ -37,7 +37,7 @@ Using the groups system is pretty easy as a server owner, here is a list of all 
     
 All commands that use a username are case sensitive so make sure your naming is correct otherwise it will say that user doesn't exist
 
-Config File Structure - If you are not comfortable editing this file then please just use the in game commands - Located in Configs/Mods/EM/Groups/ElixrMods-GroupsData.json
+Config File Structure - If you are not comfortable editing this file then please just use the in game commands - Located in Configs/Mods/ESP/Groups/ESP-GroupsData.json
 
 ```json
  {
