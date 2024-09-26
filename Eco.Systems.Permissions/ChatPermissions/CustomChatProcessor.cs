@@ -30,7 +30,6 @@ namespace Eco.Systems.Permissions.Permissions
             var level = chatClient.GetChatAuthLevel();
 
             var adapter = CommandGroupsManager.FindAdapter(Localizer.DoStr(command.Name));
-            Log.WriteErrorLineLocStr($"{adapter?.Identifier}");
 
             if (adapter == null)
             {
