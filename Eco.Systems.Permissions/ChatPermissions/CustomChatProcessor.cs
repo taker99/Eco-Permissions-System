@@ -58,8 +58,6 @@ namespace Eco.Systems.Permissions.Permissions
 
             // default behaviour is to deny if the state is unexpected
             chatClient.ErrorLocStr(string.Format(Plugin.appName + Localizer.DoStr("You are not authorized to use the command {0}"), command.Name));
-
-            commandProcessor?.Invoke(command, chatClient);
             return false;
         }
     }
