@@ -49,14 +49,14 @@ namespace Eco.Systems.Permissions.Permissions
                 }
             }
 
-            // check the users groups permissions permissions
-            if (chatClient is User invokingUser && GroupsManager.API.UserPermitted(invokingUser, adapter))
+            // check the users groups permissions permissions if the caller is a user
+            if (chatClient is not User invokingUser || GroupsManager.API.UserPermitted(invokingUser, adapter))
             {
-                commandProcessor?.Invoke(command, invokingUser);
+                commandProcessor?.Invoke(command, chatClient);
                 return true;
             }
 
-            // default behaviour is to deny if command or user is not set
+            // default behaviour is to deny if the state is unexpected
             chatClient.ErrorLocStr(string.Format(Plugin.appName + Localizer.DoStr("You are not authorized to use the command {0}"), command.Name));
 
             commandProcessor?.Invoke(command, chatClient);
