@@ -1,14 +1,8 @@
-﻿using Eco.Systems.Permissions.Groups;
-using Eco.Gameplay.Players;
+﻿using Eco.Gameplay.Players;
 using Eco.Gameplay.Systems.Chat;
-using Eco.Shared.Localization;
-using System.Linq;
-using System;
-using Eco.Core.Utils.Logging;
-using Eco.Shared.Utils;
 using Eco.Gameplay.Systems.Messaging.Chat.Commands;
-using System.Collections.Generic;
-using Eco.Shared.Logging;
+using Eco.Shared.Localization;
+using Eco.Systems.Permissions.Groups;
 
 namespace Eco.Systems.Permissions.Permissions
 {
@@ -20,7 +14,6 @@ namespace Eco.Systems.Permissions.Permissions
 
         public ESPCustomChatProcessor()
         {
-
             commandsByLanguage[(int)SupportedLanguage.English] = new Dictionary<string, ChatCommand>();
         }
 
@@ -28,7 +21,6 @@ namespace Eco.Systems.Permissions.Permissions
         public static bool ESPProcessCommand(ChatCommand command, IChatClient chatClient)
         {
             var level = chatClient.GetChatAuthLevel();
-
             var adapter = CommandGroupsManager.FindAdapter(Localizer.DoStr(command.Name));
 
             if (adapter == null)
@@ -60,5 +52,4 @@ namespace Eco.Systems.Permissions.Permissions
             return false;
         }
     }
-
 }
