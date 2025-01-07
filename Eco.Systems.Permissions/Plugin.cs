@@ -14,8 +14,8 @@ namespace Eco.Systems.Permissions
     public class Plugin: Singleton<Plugin>, IModKitPlugin, IConfigurablePlugin, IModInit
     {
         private static readonly string saveLocation = Path.Combine("Configs", "Mods");
-        public const string appNameCon = "[ESP]";
-        public const string appName = "<color=green>[ESP]</color>";
+        public const string appNameCon = "[ESP] ";
+        public const string appName = "<color=green>[ESP]</color> ";
         private readonly PluginConfig<BaseConfig> config;
         public static string SaveLocation => GetRelevantDirectory();
         internal const string fileFormat = ".json";

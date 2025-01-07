@@ -10,8 +10,9 @@
     <Description>Eco Systems Permissions. A Stripped down version of the Elixr Mods Permissions System</Description>
     <PackageProjectUrl>github.com/TheKye</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>
-    <AssemblyVersion>1.0.0.1</AssemblyVersion>
-    <FileVersion>1.0.0.1</FileVersion>
+    <AssemblyVersion>1.0.0.2</AssemblyVersion>
+    <FileVersion>1.0.0.2</FileVersion>
+    <Version>1.0.0.2</Version>
   </PropertyGroup>
 
   <ItemGroup>

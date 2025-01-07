@@ -100,7 +100,6 @@ namespace Eco.Systems.Permissions.Permissions
 
         public void Initialize(TimedTask timer)
         {
-            Log.WriteErrorLineLocStr("Ding");
             GetCommandsAndSet();
         }
 

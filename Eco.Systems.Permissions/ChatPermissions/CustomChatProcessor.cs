@@ -38,6 +38,12 @@ namespace Eco.Systems.Permissions.Permissions
                 return false;
             }
 
+            if(chatClient is not User)
+            {
+                commandProcessor?.Invoke(command, chatClient);
+                return true;
+            }
+
             // if an admin or developer & we have not overridden this in our config return true;
             if ((level >= ChatAuthorizationLevel.Admin && CommandGroupsManager.Config.DefaultAdminBehaviour) || (command.AuthLevel == ChatAuthorizationLevel.User && CommandGroupsManager.Config.DefaultUserBehaviour))
             {
