@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Copyright>Elixr Team</Copyright>
@@ -10,10 +10,12 @@
     <Description>Eco Systems Permissions. A Stripped down version of the Elixr Mods Permissions System</Description>
     <PackageProjectUrl>github.com/TheKye</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>
+    <AssemblyVersion>1.0.0.1</AssemblyVersion>
+    <FileVersion>1.0.0.1</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Eco.ReferenceAssemblies" Version="0.11.0.4-beta-release-722" />
+    <PackageReference Include="Eco.ReferenceAssemblies" Version="0.11.1.6-beta-release-826" />
 	  <PackageReference Include="ConcurrentHashSet" Version="1.3.0" />
 	  <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>

@@ -5,9 +5,16 @@ using Eco.Shared.Localization;
 using Eco.Gameplay.Systems.Messaging.Chat.Commands;
 using Eco.Gameplay.Systems.Messaging.Chat;
 using Eco.Core.Utils;
+using Eco.Core;
+using Eco.WebServer;
+using Eco.World;
+using Eco.Plugins.Networking;
+using Eco.Shared.Networking;
+using Eco.Shared.Logging;
 
 namespace Eco.Systems.Permissions.Permissions
 {
+    [PriorityAfter([typeof(NetworkManager)])]
     public class CommandGroupsManager : IModKitPlugin, IInitializablePlugin
     {
         // The currently internally cached set of commands.
@@ -17,6 +24,7 @@ namespace Eco.Systems.Permissions.Permissions
         private const string _configFile = "CommandGroupsConfig.json";
         internal static string protectorGroup = "command_admin";
         private static string _subPath = Path.DirectorySeparatorChar + "ESP" + Path.DirectorySeparatorChar +"CommandGroups";
+        private static Type[] networkPlugin = [typeof(NetworkManager)];
 
         public static CommandGroupsConfig? Config { get; private set; }
 
@@ -43,10 +51,10 @@ namespace Eco.Systems.Permissions.Permissions
             var cleanCommand = Utils.StringUtils.Sanitize(dirtyCommand);
 
             if (Commands?.FirstOrDefault(adpt => adpt.Identifier == cleanCommand) != null)
-                return Commands?.FirstOrDefault(adpt => adpt.Identifier.Equals(cleanCommand));
+                return Commands.FirstOrDefault(adpt => adpt.Identifier.Equals(cleanCommand));
 
             else
-                return Commands?.FirstOrDefault(adpt => adpt.ShortCut.ToLower() == cleanCommand);
+                return Commands.FirstOrDefault(adpt => adpt.ShortCut.ToLower() == cleanCommand);
         }
 
         public static ChatCommandAdapter[] FindAdapterAndChildren(string dirtyCommand)
@@ -92,6 +100,7 @@ namespace Eco.Systems.Permissions.Permissions
 
         public void Initialize(TimedTask timer)
         {
+            Log.WriteErrorLineLocStr("Ding");
             GetCommandsAndSet();
         }
 

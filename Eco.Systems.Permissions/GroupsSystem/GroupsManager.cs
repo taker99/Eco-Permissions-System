@@ -208,7 +208,7 @@ namespace Eco.Systems.Permissions.Groups
 
         public void Initialize(TimedTask timer)
         {
-            //Reset Warp Points on new world generation to prevent adding of old warp points on a new world
+            //Deletes Groups File on New World
             if (Plugin.Obj.Config.WipeGroupsFileOnFreshWorld)
                 WorldGeneratorPlugin.OnFinishGenerate.AddUnique(HandleWorldReset);
         }
