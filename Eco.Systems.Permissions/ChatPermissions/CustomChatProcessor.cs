@@ -1,14 +1,8 @@
-﻿using Eco.Systems.Permissions.Groups;
-using Eco.Gameplay.Players;
+﻿using Eco.Gameplay.Players;
 using Eco.Gameplay.Systems.Chat;
-using Eco.Shared.Localization;
-using System.Linq;
-using System;
-using Eco.Core.Utils.Logging;
-using Eco.Shared.Utils;
 using Eco.Gameplay.Systems.Messaging.Chat.Commands;
-using System.Collections.Generic;
-using Eco.Shared.Logging;
+using Eco.Shared.Localization;
+using Eco.Systems.Permissions.Groups;
 
 namespace Eco.Systems.Permissions.Permissions
 {
@@ -20,7 +14,6 @@ namespace Eco.Systems.Permissions.Permissions
 
         public ESPCustomChatProcessor()
         {
-
             commandsByLanguage[(int)SupportedLanguage.English] = new Dictionary<string, ChatCommand>();
         }
 
@@ -28,9 +21,7 @@ namespace Eco.Systems.Permissions.Permissions
         public static bool ESPProcessCommand(ChatCommand command, IChatClient chatClient)
         {
             var level = chatClient.GetChatAuthLevel();
-
             var adapter = CommandGroupsManager.FindAdapter(Localizer.DoStr(command.Name));
-            Log.WriteErrorLineLocStr($"{adapter?.Identifier}");
 
             if (adapter == null)
             {
@@ -49,19 +40,18 @@ namespace Eco.Systems.Permissions.Permissions
                 }
             }
 
-            // check the users groups permissions permissions
-            if (chatClient is User invokingUser && GroupsManager.API.UserPermitted(invokingUser, adapter))
+            // check the users groups permissions permissions if the caller is a user
+            if (chatClient is not User invokingUser || GroupsManager.API.UserPermitted(invokingUser, adapter))
             {
-                commandProcessor?.Invoke(command, invokingUser);
+                commandProcessor?.Invoke(command, chatClient);
                 return true;
             }
 
-            // default behaviour is to deny if command or user is not set
+            // default behaviour is to deny if the state is unexpected
             chatClient.ErrorLocStr(string.Format(Plugin.appName + Localizer.DoStr("You are not authorized to use the command {0}"), command.Name));
 
             commandProcessor?.Invoke(command, chatClient);
             return false;
         }
     }
-
 }
