@@ -15,7 +15,7 @@ using Eco.Shared.Logging;
 namespace Eco.Systems.Permissions.Permissions
 {
     [PriorityAfter([typeof(NetworkManager)])]
-    public class CommandGroupsManager : IModKitPlugin, IInitializablePlugin
+    public class CommandGroupsManager : Singleton<CommandGroupsManager>, IModKitPlugin, IInitializablePlugin
     {
         // The currently internally cached set of commands.
         private IEnumerable<ChatCommand> _commands;
@@ -24,7 +24,6 @@ namespace Eco.Systems.Permissions.Permissions
         private const string _configFile = "CommandGroupsConfig.json";
         internal static string protectorGroup = "command_admin";
         private static string _subPath = Path.DirectorySeparatorChar + "ESP" + Path.DirectorySeparatorChar +"CommandGroups";
-        private static Type[] networkPlugin = [typeof(NetworkManager)];
 
         public static CommandGroupsConfig? Config { get; private set; }
 
@@ -36,6 +35,9 @@ namespace Eco.Systems.Permissions.Permissions
                 SaveConfig();
         }
 
+        /// <summary>
+        /// Gets a full list of all commands in game and caches them to reduce requests from the mod
+        /// </summary>
         public void GetCommandsAndSet()
         {
             _commands = LoadCommandsInternal();
@@ -45,7 +47,12 @@ namespace Eco.Systems.Permissions.Permissions
             CreateAdapters();
         }
 
-        // Retrieve a specific adapter based on an input string (may return null)
+        /// <summary>
+        /// Look for an appropriate command by its command name, 
+        /// here we check if its a full command name or a shortcut command.
+        /// </summary>
+        /// <param name="dirtyCommand"></param>
+        /// <returns>Command or null</returns>
         public static ChatCommandAdapter FindAdapter(string dirtyCommand)
         {
             var cleanCommand = Utils.StringUtils.Sanitize(dirtyCommand);
@@ -57,6 +64,12 @@ namespace Eco.Systems.Permissions.Permissions
                 return Commands.FirstOrDefault(adpt => adpt.ShortCut.ToLower() == cleanCommand);
         }
 
+        /// <summary>
+        /// Here we attempt to find any and all children commands or "sub commands" as noted in eco commands
+        /// This is used to grant all sub commands of a parent command to a group without needing to do the entire list
+        /// </summary>
+        /// <param name="dirtyCommand"></param>
+        /// <returns>Command List or null</returns>
         public static ChatCommandAdapter[] FindAdapterAndChildren(string dirtyCommand)
         {
             var cleanCommand = Utils.StringUtils.Sanitize(dirtyCommand);
@@ -65,11 +78,12 @@ namespace Eco.Systems.Permissions.Permissions
 
             ChatCommandAdapter[]? Results = null;
 
+            //Cycle Through the list of commands and find our desired command
             foreach(var c in commands)
             {
                 if (c.Name == cleanCommand)
                 {
-
+                    //cycle through the command and check for sub commands and add to the results
                     if (c.HasSubCommands)
                     {
                         Results?.AddNotNull(Commands?.FirstOrDefault(adpt => adpt.Identifier == c.Name));
@@ -103,6 +117,9 @@ namespace Eco.Systems.Permissions.Permissions
             GetCommandsAndSet();
         }
 
+        /// <summary>
+        /// Turns a command into an Adaptor for internal use
+        /// </summary>
         private void CreateAdapters()
         {
             _commands?.ForEach(c =>
@@ -112,7 +129,7 @@ namespace Eco.Systems.Permissions.Permissions
             });
         }
 
-        // Internally cache all the commands.
+        /// Internally cache all the commands. so we can save them for later.
         private IEnumerable<ChatCommand> LoadCommandsInternal()
         {
             IEnumerable<ChatCommand> commands = ChatManager.Obj.GetAllCommands();
