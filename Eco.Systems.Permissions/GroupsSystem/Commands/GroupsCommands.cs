@@ -96,21 +96,60 @@ namespace Eco.Systems.Permissions.Groups
         }
 
         [ChatSubCommand("Groups", "Used to add a user to a group", "grp-adduser", ChatAuthorizationLevel.Admin)]
-        public static void AddUserToGroup(IChatClient client, User user, string groupName)
+        public static void AddUserToGroup(IChatClient client, string identifier, string groupName)
         {
+            User user;
+            if (identifier.All(char.IsDigit) && identifier.Length == 17)
+            {
+                user = UserManager.FindUserBySteamId(identifier);
+            }
+            else if (Guid.TryParse(identifier, out _))
+            {
+                user = UserManager.FindUserBySlgId(identifier);
+            }
+            else
+            {
+                user = UserManager.FindUser(identifier);
+            }
+
+            if (user == null)
+            {
+                client.ErrorLocStr($"User {identifier} was not found.");
+                return;
+            }
+
             Group group = GroupsManager.Data.GetOrAddGroup(groupName, true);
-            
+
             if (group.AddUser(user))
                 client.MsgLocStr($"User {user.Name} was added to Group {group.GroupName}");
             else
                 client.ErrorLocStr($"User {user.Name} Already Exists in Group: {group.GroupName}");
-            
+
             GroupsManager.API.SaveData();
         }
 
         [ChatSubCommand("Groups", "Used to remove a user from a group", "grp-remuser", ChatAuthorizationLevel.Admin)]
-        public static void RemoveUserFromGroup(IChatClient client, User user, string groupName)
+        public static void RemoveUserFromGroup(IChatClient client, string identifier, string groupName)
         {
+            User user;
+            if (identifier.All(char.IsDigit) && identifier.Length == 17)
+            {
+                user = UserManager.FindUserBySteamId(identifier);
+            }
+            else if (Guid.TryParse(identifier, out _))
+            {
+                user = UserManager.FindUserBySlgId(identifier);
+            }
+            else
+            {
+                user = UserManager.FindUser(identifier);
+            }
+
+            if (user == null)
+            {
+                client.ErrorLocStr($"User {identifier} was not found.");
+                return;
+            }
             Group group = GroupsManager.Data.GetOrAddGroup(groupName, false);
             if (group == null)
             {
