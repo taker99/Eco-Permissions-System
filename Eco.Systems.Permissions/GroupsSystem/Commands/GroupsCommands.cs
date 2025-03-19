@@ -93,44 +93,31 @@ namespace Eco.Systems.Permissions.Groups
         }
 
         [ChatSubCommand("Groups", "Used to add a user to a group", "grp-adduser", ChatAuthorizationLevel.Admin)]
-        public static void AddUserToGroup(IChatClient user, string userName, string groupName)
+        public static void AddUserToGroup(IChatClient client, User user, string groupName)
         {
             Group group = GroupsManager.Data.GetOrAddGroup(groupName, true);
-            User toAdd = PlayerUtils.GetUserByName(userName);
-            if (toAdd == null)
-            {
-                user.ErrorLocStr($"User {userName} was unable to be found.");
-                return;
-            }
-
-            if (group.AddUser(toAdd))
-                user.MsgLocStr($"User {toAdd.Name} was added to Group {group.GroupName}");
+            
+            if (group.AddUser(user))
+                client.MsgLocStr($"User {user.Name} was added to Group {group.GroupName}");
             else
-                user.ErrorLocStr($"User {toAdd.Name} Already Exists in Group: {group.GroupName}");
+                client.ErrorLocStr($"User {user.Name} Already Exists in Group: {group.GroupName}");
             
             GroupsManager.API.SaveData();
         }
 
         [ChatSubCommand("Groups", "Used to remove a user from a group", "grp-remuser", ChatAuthorizationLevel.Admin)]
-        public static void RemoveUserFromGroup(IChatClient user, string userName, string groupName)
+        public static void RemoveUserFromGroup(IChatClient client, User user, string groupName)
         {
             Group group = GroupsManager.Data.GetOrAddGroup(groupName, false);
             if (group == null)
             {
-                user.ErrorLocStr($"Group {groupName} was unable to be found.");
+                client.ErrorLocStr($"Group {groupName} was unable to be found.");
             }
 
-            User toRemove = PlayerUtils.GetUser(userName);
-            if (toRemove == null)
-            {
-                user.ErrorLocStr($"User {userName} was unable to be found.");
-                return;
-            }
-
-            if (group.RemoveUser(toRemove))
-                user.MsgLocStr($"User {toRemove.Name} was removed from Group {group.GroupName}");
+            if (group.RemoveUser(user))
+                client.MsgLocStr($"User {user.Name} was removed from Group {group.GroupName}");
             else
-                user.ErrorLocStr($"User {toRemove.Name} was unable to be found in Group: {group.GroupName}");
+                client.ErrorLocStr($"User {user.Name} was unable to be found in Group: {group.GroupName}");
 
             GroupsManager.API.SaveData();
         }
