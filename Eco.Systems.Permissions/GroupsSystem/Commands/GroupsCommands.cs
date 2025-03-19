@@ -47,12 +47,15 @@ namespace Eco.Systems.Permissions.Groups
         {
             StringBuilder sb = new();
             var groups = GroupsManager.Data.Groups;
+            sb.Append(string.Format("\n"));
             groups.ForEach(g =>
             {
-                sb.Append(g.GroupName + "\n");
+                sb.Append(g.GroupName);
 
                 if (g != groups.Last())
-                    sb.Append(", ");
+                    sb.Append(string.Format(", "));
+                else
+                    sb.Append(string.Format("\n"));
             });
 
             var user = UserManager.FindUser(client.Name);
@@ -61,7 +64,7 @@ namespace Eco.Systems.Permissions.Groups
                 client.ErrorLocStr($"Groups: {sb}");
             }
             else
-                user.InfoBoxLocStr(sb.ToString());
+                user.TempServerMessage(Localizer.DoStr(sb.ToString()));
         }
         
         [ChatSubCommand("Groups", "Used to print a list of groups for rcon use", "rcongrp-list", ChatAuthorizationLevel.Admin)]
@@ -89,7 +92,7 @@ namespace Eco.Systems.Permissions.Groups
                 client.ErrorLocStr($"Permissions for Group: {group.GroupName}: {sb}");
             }
             else
-                user.InfoBoxLocStr(string.Format("Group {0}:\nPermissions: {1}", group.GroupName, sb.ToString()));
+                user.TempServerMessage(Localizer.DoStr(string.Format("\nGroup {0}:\nPermissions: {1}", group.GroupName, sb.ToString())));
         }
 
         [ChatSubCommand("Groups", "Used to add a user to a group", "grp-adduser", ChatAuthorizationLevel.Admin)]
