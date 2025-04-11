@@ -23,7 +23,7 @@ namespace Eco.Systems.Permissions.Permissions
         private static ChatCommandService ChatCommandService = new();
         private const string _configFile = "CommandGroupsConfig.json";
         internal static string protectorGroup = "command_admin";
-        private static string _subPath = Path.DirectorySeparatorChar + "ESP" + Path.DirectorySeparatorChar +"CommandGroups";
+        private static string _subPath = Path.DirectorySeparatorChar + "ESP" + Path.DirectorySeparatorChar + "CommandGroups";
 
         public static CommandGroupsConfig? Config { get; private set; }
 
@@ -57,11 +57,7 @@ namespace Eco.Systems.Permissions.Permissions
         {
             var cleanCommand = Utils.StringUtils.Sanitize(dirtyCommand);
 
-            if (Commands?.FirstOrDefault(adpt => adpt.Identifier == cleanCommand) != null)
-                return Commands.FirstOrDefault(adpt => adpt.Identifier.Equals(cleanCommand));
-
-            else
-                return Commands.FirstOrDefault(adpt => adpt.ShortCut.ToLower() == cleanCommand);
+            return Commands.FirstOrDefault(adpt => adpt.Identifier.Equals(cleanCommand)) ?? Commands.FirstOrDefault(adpt => adpt.ShortCut.Equals(cleanCommand)) ?? null; ; ;
         }
 
         /// <summary>
@@ -70,33 +66,36 @@ namespace Eco.Systems.Permissions.Permissions
         /// </summary>
         /// <param name="dirtyCommand"></param>
         /// <returns>Command List or null</returns>
-        public static ChatCommandAdapter[] FindAdapterAndChildren(string dirtyCommand)
+        public static ChatCommandAdapter[]? FindAdapterAndChildren(string dirtyCommand)
         {
             var cleanCommand = Utils.StringUtils.Sanitize(dirtyCommand);
 
-            IEnumerable<ChatCommand> commands = ChatManager.Obj.ChatCommandService.GetAllCommands();
+            IEnumerable<ChatCommand> commands = ChatManager.Obj.GetAllCommands() ;
 
             ChatCommandAdapter[]? Results = null;
-
             //Cycle Through the list of commands and find our desired command
-            foreach(var c in commands)
+            var c = commands.Where(x => x.Name.ToLower() == cleanCommand || x.ShortCut.ToLower() == cleanCommand);
+            foreach(var cm in c)
             {
-                if (c.Name == cleanCommand)
+                Log.WriteErrorLineLocStr($"{cm}, {cleanCommand}");
+
+                //cycle through the command and check for sub commands and add to the results
+                if (cm.HasSubCommands)
                 {
-                    //cycle through the command and check for sub commands and add to the results
-                    if (c.HasSubCommands)
+                    Results?.AddNotNull(Commands?.FirstOrDefault(adpt => adpt.Identifier == cm.Name.ToLower()));
+
+                    foreach (var sub in cm.SubCommands)
                     {
-                        Results?.AddNotNull(Commands?.FirstOrDefault(adpt => adpt.Identifier == c.Name));
-
-                        foreach (var sub in c.SubCommands)
-                        {
-                            Results?.AddNotNull(Commands?.FirstOrDefault(adpt => adpt.Identifier == sub.Name));
-                        }
-
+                        Log.WriteErrorLineLocStr($"Subcommands: {cm.Name}");
+                        Results?.AddNotNull(Commands?.FirstOrDefault(adpt => adpt.Identifier.Equals(sub.Name, StringComparison.CurrentCultureIgnoreCase)));
                     }
-                    else break;
+
                 }
-                else break;
+                else
+                {
+                    Results?.AddNotNull(Commands?.FirstOrDefault(adpt => adpt.ShortCut.Equals(cm.ShortCut, StringComparison.CurrentCultureIgnoreCase))); ;
+                    break;
+                }
             }
             return Results;
         }
@@ -124,7 +123,7 @@ namespace Eco.Systems.Permissions.Permissions
         {
             _commands?.ForEach(c =>
             {
-                if (!Commands.Any(adpt => adpt.Identifier == c.Name))
+                if (!Commands.Any(adpt => adpt.Identifier == c.Name.ToLower()))
                     Commands?.Add(new ChatCommandAdapter(c));
             });
         }

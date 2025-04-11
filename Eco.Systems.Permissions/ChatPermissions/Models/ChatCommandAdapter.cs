@@ -20,8 +20,9 @@ namespace Eco.Systems.Permissions.Permissions
 
         public ChatCommandAdapter(ChatCommand c)
         {
-            Identifier = c.Name;
-            ShortCut = c.ShortCut;
+            Identifier = c.Name.ToLower();
+            ShortCut = c.ShortCut.ToLower();
+
         }
 
         public bool Permit(SimpleGroupUser user)

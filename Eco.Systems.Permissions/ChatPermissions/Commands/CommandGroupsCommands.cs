@@ -7,6 +7,8 @@ using Eco.Systems.Permissions.Utils;
 using Eco.Gameplay.Objects;
 using Eco.Shared.Utils;
 using System;
+using Eco.Core.Plugins;
+using Eco.Gameplay.Systems;
 
 namespace Eco.Systems.Permissions.Permissions
 {
@@ -57,7 +59,7 @@ namespace Eco.Systems.Permissions.Permissions
                 client.MsgLocStr(Plugin.appName + string.Format(Localizer.DoStr("Was unable to find Group {0}, please create the group first"), groupName));
                 return;
             }
-            ChatCommandAdapter[] adapters = null;
+            ChatCommandAdapter[]? adapters = null;
             try
             {
                 adapters = CommandGroupsManager.FindAdapterAndChildren(command);
@@ -176,6 +178,21 @@ namespace Eco.Systems.Permissions.Permissions
         public static void RemBlacklistCommand(IChatClient client, string command, string groupName)
         {
             Revoke(client, command, groupName);
+        }
+
+        [ChatSubCommand("CommandPermissions", "Opens up a window to change your configurations", "eps-config", ChatAuthorizationLevel.Admin)]
+        public static void Config(User user)
+        {
+                var config = new ModConfig();
+
+            ViewEditorUtils.PopupUserEditValue(user, typeof(EPSConfigUI), Localizer.DoStr("Trade Assistant Configuration"), config.ToUI(), null, OnSubmit);
+
+            void OnSubmit(object entry)
+            {
+                if (entry is EPSConfigUI uiConfig)
+                    config.UpdateFromUI(uiConfig);
+                StorageManager.Obj.MarkDirty(EPSData.Obj);
+            }
         }
     }
 }
